@@ -57,6 +57,33 @@
             font-weight: bold;
             color: #166534; /* Darker green */
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .language-selector {
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .language-btn {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         .tabs {
@@ -315,6 +342,28 @@
             text-align: right;
         }
 
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+            justify-content: flex-end;
+        }
+
+        .message-action-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-action-btn:hover {
+            color: var(--primary);
+        }
+
         .loading-dots {
             display: flex;
             gap: 0.25rem;
@@ -372,6 +421,16 @@
             cursor: pointer;
         }
 
+        .mic-btn.listening {
+            color: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .upload-btn {
             display: flex;
             align-items: center;
@@ -419,6 +478,11 @@
         <div class="app-container">
             <div class="header">
                 <h1 class="title">Agri AI Assistant 🌾</h1>
+                <div class="language-selector">
+                    <button class="language-btn active" data-lang="en">English</button>
+                    <button class="language-btn" data-lang="hi">हिंदी</button>
+                    <button class="language-btn" data-lang="te">తెలుగు</button>
+                </div>
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="chat">Chat</button>
                     <button class="tab-btn" data-tab="crop">Crop Advice</button>
@@ -429,7 +493,7 @@
             <!-- Crop Advice Tab -->
             <div id="crop-tab" class="tab-content">
                 <div class="soil-form">
-                    <h2>Soil Information</h2>
+                    <h2 data-translate="soil_info">Soil Information</h2>
                     <div class="soil-grid">
                         <div class="input-field">
                             <input type="number" id="soil-ph" placeholder="Soil pH (0-14)" min="0" max="14" step="0.1">
@@ -448,7 +512,7 @@
                         </div>
                         <div class="input-field">
                             <select id="region">
-                                <option value="">Select Region</option>
+                                <option value="" data-translate="select_region">Select Region</option>
                                 <option value="tropical">Tropical</option>
                                 <option value="temperate">Temperate</option>
                                 <option value="arid">Arid</option>
@@ -456,24 +520,24 @@
                             </select>
                         </div>
                     </div>
-                    <button id="get-recommendations" class="primary-btn">Get Crop Recommendations</button>
+                    <button id="get-recommendations" class="primary-btn" data-translate="get_recommendations">Get Crop Recommendations</button>
                 </div>
             </div>
 
             <!-- Diagnose Tab -->
             <div id="diagnose-tab" class="tab-content">
                 <div class="diagnose-container">
-                    <h2>Plant Health Diagnosis</h2>
+                    <h2 data-translate="plant_health">Plant Health Diagnosis</h2>
                     <label id="upload-area" class="upload-area">
                         <i data-lucide="upload" class="upload-icon"></i>
-                        <p class="upload-text" id="upload-text">Upload plant image for diagnosis</p>
+                        <p class="upload-text" id="upload-text" data-translate="upload_plant">Upload plant image for diagnosis</p>
                         <div id="image-preview" class="image-preview hidden">
                             <img id="preview-image" src="" alt="Preview">
                             <button id="remove-image" class="remove-btn">×</button>
                         </div>
                     </label>
                     <input type="file" id="plant-image" accept="image/*" class="hidden">
-                    <button id="analyze-plant" class="primary-btn" disabled>Analyze Plant Health</button>
+                    <button id="analyze-plant" class="primary-btn" disabled data-translate="analyze_plant">Analyze Plant Health</button>
                 </div>
             </div>
 
@@ -482,23 +546,23 @@
                 <div class="chat-container">
                     <div class="message-container" id="message-container">
                         <div class="empty-state" id="empty-state">
-                            <p>Ask me about crops, soil, plant diseases, or farming techniques</p>
+                            <p data-translate="ask_me">Ask me about crops, soil, plant diseases, or farming techniques</p>
                             <div class="quick-questions">
-                                <button class="quick-btn" data-question="Best crops for my soil?">
+                                <button class="quick-btn" data-question-en="Best crops for my soil?" data-question-hi="मेरी मिट्टी के लिए सबसे अच्छी फसलें कौन सी हैं?" data-question-te="నా నేలకు ఉత్తమమైన పంటలు ఏమిటి?">
                                     <i data-lucide="crop"></i>
-                                    Best crops
+                                    <span data-translate="best_crops">Best crops</span>
                                 </button>
-                                <button class="quick-btn" data-question="Identify plant disease">
+                                <button class="quick-btn" data-question-en="Identify plant disease" data-question-hi="पौधे की बीमारी की पहचान करें" data-question-te="మొక్కల వ్యాధిని గుర్తించండి">
                                     <i data-lucide="leaf"></i>
-                                    Plant disease
+                                    <span data-translate="plant_disease">Plant disease</span>
                                 </button>
-                                <button class="quick-btn" data-question="Weather impact on crops?">
+                                <button class="quick-btn" data-question-en="Weather impact on crops?" data-question-hi="फसलों पर मौसम का प्रभाव?" data-question-te="పంటలపై వాతావరణ ప్రభావం?">
                                     <i data-lucide="sun"></i>
-                                    Weather impact
+                                    <span data-translate="weather_impact">Weather impact</span>
                                 </button>
-                                <button class="quick-btn" data-question="Irrigation advice">
+                                <button class="quick-btn" data-question-en="Irrigation advice" data-question-hi="सिंचाई सलाह" data-question-te="నీటిపారుదల సలహా">
                                     <i data-lucide="droplet"></i>
-                                    Irrigation
+                                    <span data-translate="irrigation">Irrigation</span>
                                 </button>
                             </div>
                         </div>
@@ -507,8 +571,8 @@
 
                 <div class="input-container">
                     <div class="text-input">
-                        <input type="text" id="user-input" placeholder="Ask about crops, soil, or plant health...">
-                        <button class="mic-btn">
+                        <input type="text" id="user-input" placeholder="Ask about crops, soil, or plant health..." data-translate-placeholder="ask_placeholder">
+                        <button class="mic-btn" id="mic-btn">
                             <i data-lucide="mic"></i>
                         </button>
                     </div>
@@ -518,7 +582,7 @@
                     </label>
                     <button id="send-btn" class="send-btn">
                         <i data-lucide="send"></i>
-                        <span class="hidden md:inline">Send</span>
+                        <span class="hidden md:inline" data-translate="send">Send</span>
                     </button>
                 </div>
             </div>
@@ -528,6 +592,73 @@
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
+
+        // Translation dictionary
+        const translations = {
+            en: {
+                soil_info: "Soil Information",
+                select_region: "Select Region",
+                get_recommendations: "Get Crop Recommendations",
+                plant_health: "Plant Health Diagnosis",
+                upload_plant: "Upload plant image for diagnosis",
+                analyze_plant: "Analyze Plant Health",
+                ask_me: "Ask me about crops, soil, plant diseases, or farming techniques",
+                best_crops: "Best crops",
+                plant_disease: "Plant disease",
+                weather_impact: "Weather impact",
+                irrigation: "Irrigation",
+                ask_placeholder: "Ask about crops, soil, or plant health...",
+                send: "Send",
+                listening: "Listening...",
+                speak: "Speak",
+                stop_speaking: "Stop",
+                crop_advice: "Crop Advice",
+                diagnose: "Diagnose",
+                chat: "Chat"
+            },
+            hi: {
+                soil_info: "मिट्टी की जानकारी",
+                select_region: "क्षेत्र चुनें",
+                get_recommendations: "फसल सिफारिशें प्राप्त करें",
+                plant_health: "पौधे की स्वास्थ्य जांच",
+                upload_plant: "निदान के लिए पौधे की छवि अपलोड करें",
+                analyze_plant: "पौधे का स्वास्थ्य विश्लेषण करें",
+                ask_me: "मुझसे फसलों, मिट्टी, पौधों की बीमारियों या खेती के तरीकों के बारे में पूछें",
+                best_crops: "सर्वोत्तम फसलें",
+                plant_disease: "पौधे की बीमारी",
+                weather_impact: "मौसम का प्रभाव",
+                irrigation: "सिंचाई",
+                ask_placeholder: "फसलों, मिट्टी या पौधों के स्वास्थ्य के बारे में पूछें...",
+                send: "भेजें",
+                listening: "सुन रहा हूँ...",
+                speak: "बोलें",
+                stop_speaking: "रोकें",
+                crop_advice: "फसल सलाह",
+                diagnose: "निदान",
+                chat: "चैट"
+            },
+            te: {
+                soil_info: "నేల సమాచారం",
+                select_region: "ప్రాంతాన్ని ఎంచుకోండి",
+                get_recommendations: "పంట సిఫార్సులను పొందండి",
+                plant_health: "మొక్కల ఆరోగ్య నిర్ధారణ",
+                upload_plant: "నిర్ధారణ కోసం మొక్క చిత్రాన్ని అప్లోడ్ చేయండి",
+                analyze_plant: "మొక్కల ఆరోగ్యాన్ని విశ్లేషించండి",
+                ask_me: "పంటలు, నేల, మొక్కల వ్యాధులు లేదా వ్యవసాయ పద్ధతుల గురించి నన్ను అడగండి",
+                best_crops: "ఉత్తమ పంటలు",
+                plant_disease: "మొక్కల వ్యాధి",
+                weather_impact: "వాతావరణ ప్రభావం",
+                irrigation: "నీటిపారుదల",
+                ask_placeholder: "పంటలు, నేల లేదా మొక్కల ఆరోగ్యం గురించి అడగండి...",
+                send: "పంపండి",
+                listening: "వినడం...",
+                speak: "మాట్లాడండి",
+                stop_speaking: "ఆపు",
+                crop_advice: "పంట సలహా",
+                diagnose: "నిర్ధారణ",
+                chat: "చాట్"
+            }
+        };
 
         // DOM Elements
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -547,11 +678,91 @@
         const uploadText = document.getElementById('upload-text');
         const removeImageBtn = document.getElementById('remove-image');
         const analyzePlantBtn = document.getElementById('analyze-plant');
+        const languageBtns = document.querySelectorAll('.language-btn');
+        const micBtn = document.getElementById('mic-btn');
 
         // State
         let messages = [];
         let currentImage = null;
         let currentTab = 'chat';
+        let currentLanguage = 'en';
+        let recognition = null;
+        let speechSynthesis = window.speechSynthesis;
+
+        // Check if browser supports speech recognition
+        const isSpeechRecognitionSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+        // Initialize speech recognition if supported
+        if (isSpeechRecognitionSupported) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                micBtn.classList.remove('listening');
+                micBtn.innerHTML = '<i data-lucide="mic"></i>';
+                lucide.createIcons();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                micBtn.classList.remove('listening');
+                micBtn.innerHTML = '<i data-lucide="mic"></i>';
+                lucide.createIcons();
+            };
+
+            recognition.onend = () => {
+                if (micBtn.classList.contains('listening')) {
+                    micBtn.classList.remove('listening');
+                    micBtn.innerHTML = '<i data-lucide="mic"></i>';
+                    lucide.createIcons();
+                }
+            };
+        } else {
+            micBtn.style.display = 'none';
+        }
+
+        // Set language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active language button
+            languageBtns.forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                el.textContent = translations[lang][key] || translations['en'][key];
+            });
+
+            // Update placeholder texts
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                el.placeholder = translations[lang][key] || translations['en'][key];
+            });
+
+            // Update tab buttons
+            tabBtns.forEach(btn => {
+                const tab = btn.getAttribute('data-tab');
+                btn.textContent = translations[lang][tab] || translations['en'][tab];
+            });
+
+            // Update quick question buttons
+            quickQuestionBtns.forEach(btn => {
+                const questionKey = `question-${btn.getAttribute('data-question-en').toLowerCase().replace(/\s+/g, '_').replace(/\?/g, '')}`;
+                btn.setAttribute('data-question', translations[lang][questionKey] || translations['en'][questionKey]);
+            });
+        }
 
         // Tab switching
         tabBtns.forEach(btn => {
@@ -583,10 +794,42 @@
             currentTab = tabId;
         }
 
+        // Language switching
+        languageBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                setLanguage(lang);
+                
+                // Update speech recognition language if supported
+                if (recognition) {
+                    switch(lang) {
+                        case 'hi':
+                            recognition.lang = 'hi-IN';
+                            break;
+                        case 'te':
+                            recognition.lang = 'te-IN';
+                            break;
+                        default:
+                            recognition.lang = 'en-US';
+                    }
+                }
+            });
+        });
+
         // Quick question buttons
         quickQuestionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                const question = btn.getAttribute('data-question');
+                let question;
+                switch(currentLanguage) {
+                    case 'hi':
+                        question = btn.getAttribute('data-question-hi');
+                        break;
+                    case 'te':
+                        question = btn.getAttribute('data-question-te');
+                        break;
+                    default:
+                        question = btn.getAttribute('data-question-en');
+                }
                 userInput.value = question;
             });
         });
@@ -618,7 +861,7 @@
                 reader.onload = (event) => {
                     previewImage.src = event.target.result;
                     imagePreview.classList.remove('hidden');
-                    uploadText.textContent = 'Image ready for upload';
+                    uploadText.textContent = translations[currentLanguage]['image_ready'] || 'Image ready for upload';
                     analyzePlantBtn.disabled = false;
                 };
                 
@@ -630,7 +873,7 @@
             e.stopPropagation();
             previewImage.src = '';
             imagePreview.classList.add('hidden');
-            uploadText.textContent = 'Upload plant image for diagnosis';
+            uploadText.textContent = translations[currentLanguage]['upload_plant'] || 'Upload plant image for diagnosis';
             plantImageInput.value = '';
             analyzePlantBtn.disabled = true;
         });
@@ -644,7 +887,19 @@
             const moisture = document.getElementById('moisture').value;
             const region = document.getElementById('region').value;
 
-            const message = `Recommend crops for: pH ${ph}, N ${nitrogen}, P ${phosphorus}, K ${potassium}, Moisture ${moisture}%, ${region} region`;
+            const regionText = document.querySelector(`#region option[value="${region}"]`).textContent;
+            
+            let message;
+            switch(currentLanguage) {
+                case 'hi':
+                    message = `फसल सिफारिशें: pH ${ph}, नाइट्रोजन ${nitrogen}, फॉस्फोरस ${phosphorus}, पोटैशियम ${potassium}, नमी ${moisture}%, ${regionText} क्षेत्र`;
+                    break;
+                case 'te':
+                    message = `పంట సిఫార్సులు: pH ${ph}, నత్రజని ${nitrogen}, భాస్వరం ${phosphorus}, పొటాషియం ${potassium}, తేమ ${moisture}%, ${regionText} ప్రాంతం`;
+                    break;
+                default:
+                    message = `Recommend crops for: pH ${ph}, N ${nitrogen}, P ${phosphorus}, K ${potassium}, Moisture ${moisture}%, ${regionText} region`;
+            }
             
             switchTab('chat');
             userInput.value = message;
@@ -653,12 +908,57 @@
 
         // Analyze plant health
         analyzePlantBtn.addEventListener('click', () => {
-            const message = "Please diagnose my plant from the uploaded image";
+            let message;
+            switch(currentLanguage) {
+                case 'hi':
+                    message = "कृपया अपलोड की गई छवि से मेरे पौधे का निदान करें";
+                    break;
+                case 'te':
+                    message = "దయచేసి అప్లోడ్ చేసిన చిత్రం నుండి నా మొక్కను నిర్ధారించండి";
+                    break;
+                default:
+                    message = "Please diagnose my plant from the uploaded image";
+            }
             
             switchTab('chat');
             userInput.value = message;
             userInput.focus();
         });
+
+        // Voice input
+        micBtn.addEventListener('click', () => {
+            if (!isSpeechRecognitionSupported) return;
+
+            if (micBtn.classList.contains('listening')) {
+                recognition.stop();
+                micBtn.classList.remove('listening');
+                micBtn.innerHTML = '<i data-lucide="mic"></i>';
+            } else {
+                recognition.start();
+                micBtn.classList.add('listening');
+                micBtn.innerHTML = '<i data-lucide="mic"></i> ' + (translations[currentLanguage]['listening'] || 'Listening...');
+            }
+            lucide.createIcons();
+        });
+
+        // Text-to-speech
+        function speakText(text) {
+            if (speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set voice based on language
+                const voices = speechSynthesis.getVoices();
+                let voice = voices.find(v => v.lang.includes(currentLanguage));
+                if (!voice) voice = voices.find(v => v.lang.includes('en'));
+                
+                if (voice) {
+                    utterance.voice = voice;
+                    utterance.lang = voice.lang;
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
 
         // Send message
         function sendMessage() {
@@ -703,19 +1003,62 @@
                 let responseText = '';
                 
                 if (userMessage.image) {
-                    responseText = "Based on the image, I detect signs of early blight. Recommendations:\n" +
-                                  "1. Remove affected leaves\n" +
-                                  "2. Apply copper-based fungicide\n" +
-                                  "3. Improve air circulation\n" +
-                                  "4. Water at the base of plants";
-                } else if (text.toLowerCase().includes('crop')) {
-                    responseText = "Based on your soil data, I recommend:\n" +
-                                  "1. Wheat (High suitability)\n" +
-                                  "2. Barley (Medium suitability)\n" +
-                                  "3. Potatoes (Medium suitability)";
+                    switch(currentLanguage) {
+                        case 'hi':
+                            responseText = "छवि के आधार पर, मुझे प्रारंभिक झुलसा रोग के लक्षण दिखाई दे रहे हैं। सिफारिशें:\n" +
+                                          "1. प्रभावित पत्तियों को हटा दें\n" +
+                                          "2. कॉपर आधारित कवकनाशी लगाएं\n" +
+                                          "3. हवा के संचार में सुधार करें\n" +
+                                          "4. पौधों के आधार पर पानी दें";
+                            break;
+                        case 'te':
+                            responseText = "చిత్రం ఆధారంగా, నేను ప్రారంభ బ్లైట్ లక్షణాలను గుర్తించాను. సిఫార్సులు:\n" +
+                                          "1. ప్రభావిత ఆకులను తీసివేయండి\n" +
+                                          "2. రాగి-ఆధారిత ఫంగిసైడ్ వర్తించండి\n" +
+                                          "3. గాలి ప్రసరణను మెరుగుపరచండి\n" +
+                                          "4. మొక్కల బేస్ వద్ద నీరు పెట్టండి";
+                            break;
+                        default:
+                            responseText = "Based on the image, I detect signs of early blight. Recommendations:\n" +
+                                          "1. Remove affected leaves\n" +
+                                          "2. Apply copper-based fungicide\n" +
+                                          "3. Improve air circulation\n" +
+                                          "4. Water at the base of plants";
+                    }
+                } else if (text.toLowerCase().includes('crop') || text.toLowerCase().includes('फसल') || text.toLowerCase().includes('పంట')) {
+                    switch(currentLanguage) {
+                        case 'hi':
+                            responseText = "आपके मिट्टी के आंकड़ों के आधार पर, मैं सुझाव देता हूं:\n" +
+                                          "1. गेहूं (उच्च उपयुक्तता)\n" +
+                                          "2. जौ (मध्यम उपयुक्तता)\n" +
+                                          "3. आलू (मध्यम उपयुक्तता)";
+                            break;
+                        case 'te':
+                            responseText = "మీ నేల డేటా ఆధారంగా, నేను సిఫార్సు చేస్తున్నాను:\n" +
+                                          "1. గోధుమ (అధిక ఉపయుక్తత)\n" +
+                                          "2. బార్లీ (మధ్యస్థ ఉపయుక్తత)\n" +
+                                          "3. బంగాళాదుంపలు (మధ్యస్థ ఉపయుక్తత)";
+                            break;
+                        default:
+                            responseText = "Based on your soil data, I recommend:\n" +
+                                          "1. Wheat (High suitability)\n" +
+                                          "2. Barley (Medium suitability)\n" +
+                                          "3. Potatoes (Medium suitability)";
+                    }
                 } else {
-                    responseText = "I can help with crop recommendations, plant disease diagnosis, and general farming advice. " +
-                                  "Please be more specific about your question or upload an image of your plant for diagnosis.";
+                    switch(currentLanguage) {
+                        case 'hi':
+                            responseText = "मैं फसल सिफारिशों, पौधों की बीमारियों के निदान और सामान्य खेती सलाह में मदद कर सकता हूँ। " +
+                                          "कृपया अपने प्रश्न को और विशिष्ट बनाएं या निदान के लिए अपने पौधे की एक छवि अपलोड करें।";
+                            break;
+                        case 'te':
+                            responseText = "నేను పంట సిఫార్సులు, మొక్కల వ్యాధుల నిర్ధారణ మరియు సాధారణ వ్యవసాయ సలహాలతో సహాయపడగలను. " +
+                                          "దయచేసి మీ ప్రశ్నను మరింత నిర్దిష్టంగా చేయండి లేదా నిర్ధారణ కోసం మీ మొక్క యొక్క చిత్రాన్ని అప్లోడ్ చేయండి.";
+                            break;
+                        default:
+                            responseText = "I can help with crop recommendations, plant disease diagnosis, and general farming advice. " +
+                                          "Please be more specific about your question or upload an image of your plant for diagnosis.";
+                    }
                 }
 
                 const assistantMessage = {
@@ -726,6 +1069,9 @@
 
                 addMessage(assistantMessage);
                 messages.push(assistantMessage);
+
+                // Speak the response
+                speakText(responseText);
             }, 1500);
         }
 
@@ -765,11 +1111,24 @@
                     </div>
                 `;
 
+                // Add speak button for assistant messages
+                if (message.role === 'assistant' && speechSynthesis) {
+                    contentHTML += `
+                        <div class="message-actions">
+                            <button class="message-action-btn" onclick="speakText('${message.content.replace(/'/g, "\\'")}')">
+                                <i data-lucide="volume-2"></i>
+                                ${translations[currentLanguage]['speak'] || 'Speak'}
+                            </button>
+                        </div>
+                    `;
+                }
+
                 messageDiv.innerHTML = contentHTML;
             }
 
             messageContainer.appendChild(messageDiv);
             messageContainer.scrollTop = messageContainer.scrollHeight;
+            lucide.createIcons();
         }
 
         // Event listeners
@@ -780,10 +1139,16 @@
             }
         });
 
+        // Initialize with English language
+        setLanguage('en');
+
         // Initialize with empty chat
         if (messages.length === 0) {
             emptyState.style.display = 'flex';
         }
+
+        // Make speakText available globally
+        window.speakText = speakText;
     </script>
 </body>
 </html>
