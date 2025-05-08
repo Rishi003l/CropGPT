@@ -1,1154 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agri AI Assistant</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --primary: #28a745;
-            --primary-light: rgba(40, 167, 69, 0.7);
-            --primary-lighter: rgba(40, 167, 69, 0.1);
-            --text-dark: #1a1a1a;
-            --text-light: #f8f9fa;
-            --bg-light: rgba(255, 255, 255, 0.3);
-            --bg-lighter: rgba(255, 255, 255, 0.6);
-            --border-radius: 0.5rem;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-image: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            color: var(--text-dark);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-
-        .app-container {
-            backdrop-filter: blur(12px);
-            background-color: rgba(255, 255, 255, 0.4);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #166534; /* Darker green */
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .language-selector {
-            margin-bottom: 0.75rem;
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .language-btn {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            border: 1px solid #d1d5db;
-            background-color: white;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .language-btn.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .tab-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            border: none;
-            background-color: transparent;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .tab-btn:not(.active) {
-            border: 1px solid #d1d5db;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .soil-form {
-            background-color: var(--bg-lighter);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 1rem;
-            backdrop-filter: blur(5px);
-        }
-
-        .soil-form h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #166534;
-            margin-bottom: 0.75rem;
-        }
-
-        .soil-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-
-        .input-field {
-            margin-bottom: 0;
-        }
-
-        .input-field input,
-        .input-field select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            background-color: white;
-            font-size: 0.875rem;
-        }
-
-        .diagnose-container {
-            background-color: var(--bg-lighter);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 1rem;
-            backdrop-filter: blur(5px);
-            text-align: center;
-        }
-
-        .diagnose-container h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #166534;
-            margin-bottom: 0.75rem;
-        }
-
-        .upload-area {
-            border: 2px dashed #a7f3d0;
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: rgba(167, 243, 208, 0.1);
-        }
-
-        .upload-area:hover {
-            background-color: rgba(167, 243, 208, 0.2);
-        }
-
-        .upload-icon {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .upload-text {
-            font-size: 0.875rem;
-        }
-
-        .image-preview {
-            position: relative;
-            margin-top: 0.75rem;
-        }
-
-        .image-preview img {
-            height: 80px;
-            border-radius: 0.25rem;
-            object-fit: cover;
-            border: 1px solid #d1d5db;
-        }
-
-        .remove-btn {
-            position: absolute;
-            top: -0.5rem;
-            right: -0.5rem;
-            background-color: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 1.25rem;
-            height: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            border: none;
-            cursor: pointer;
-        }
-
-        .primary-btn {
-            width: 100%;
-            padding: 0.5rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            margin-top: 0.75rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-
-        .primary-btn:hover {
-            background-color: #1e8f3e;
-        }
-
-        .primary-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .chat-container {
-            background-color: var(--bg-light);
-            border-radius: var(--border-radius);
-            height: 50vh;
-            overflow-y: auto;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            backdrop-filter: blur(5px);
-        }
-
-        .message-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .empty-state {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #4b5563;
-        }
-
-        .quick-questions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-            margin-top: 1rem;
-            max-width: 300px;
-        }
-
-        .quick-btn {
-            padding: 0.75rem 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            background-color: white;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-            height: 4rem;
-        }
-
-        .quick-btn i {
-            font-size: 1rem;
-        }
-
-        .message {
-            max-width: 80%;
-            padding: 0.75rem;
-            border-radius: var(--border-radius);
-            font-size: 0.875rem;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .assistant-message {
-            align-self: flex-start;
-            background-color: white;
-        }
-
-        .message-image {
-            margin-top: 0.5rem;
-            position: relative;
-        }
-
-        .message-image img {
-            max-height: 160px;
-            border-radius: 0.25rem;
-            border: 1px solid #d1d5db;
-        }
-
-        .image-badge {
-            position: absolute;
-            bottom: 0.5rem;
-            left: 0.5rem;
-            background-color: rgba(229, 231, 235, 0.9);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-        }
-
-        .message-time {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-
-        .message-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.25rem;
-            justify-content: flex-end;
-        }
-
-        .message-action-btn {
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .message-action-btn:hover {
-            color: var(--primary);
-        }
-
-        .loading-dots {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .dot {
-            width: 0.5rem;
-            height: 0.5rem;
-            border-radius: 50%;
-            background-color: var(--primary);
-            animation: bounce 1s infinite;
-        }
-
-        .dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-0.25rem); }
-        }
-
-        .input-container {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .text-input {
-            flex: 1;
-            position: relative;
-        }
-
-        .text-input input {
-            width: 100%;
-            padding: 0.75rem 2.5rem 0.75rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: var(--border-radius);
-            background-color: var(--bg-light);
-            backdrop-filter: blur(5px);
-            font-size: 0.875rem;
-        }
-
-        .mic-btn {
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-        }
-
-        .mic-btn.listening {
-            color: #ef4444;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .upload-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: var(--border-radius);
-            background-color: var(--bg-light);
-            backdrop-filter: blur(5px);
-            border: none;
-            cursor: pointer;
-            color: #4b5563;
-        }
-
-        .upload-btn.has-image {
-            background-color: #dcfce7;
-            color: var(--primary);
-        }
-
-        .send-btn {
-            padding: 0 1rem;
-            background-color: var(--primary-light);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-weight: 500;
-        }
-
-        .send-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple GameZone</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .games {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    .game-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+      width: 200px;
+    }
+    .game-card button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #6e8efb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .game-card button:hover {
+      background: #5d7de8;
+    }
+    iframe {
+      display: none;
+      width: 100%;
+      height: 600px;
+      margin-top: 30px;
+      border: none;
+    }
+    #backButton {
+      display: none;
+      margin-top: 20px;
+      background: #555;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="app-container">
-            <div class="header">
-                <h1 class="title">Agri AI Assistant 🌾</h1>
-                <div class="language-selector">
-                    <button class="language-btn active" data-lang="en">English</button>
-                    <button class="language-btn" data-lang="hi">हिंदी</button>
-                    <button class="language-btn" data-lang="te">తెలుగు</button>
-                </div>
-                <div class="tabs">
-                    <button class="tab-btn active" data-tab="chat">Chat</button>
-                    <button class="tab-btn" data-tab="crop">Crop Advice</button>
-                    <button class="tab-btn" data-tab="diagnose">Diagnose</button>
-                </div>
-            </div>
+  <h1>Simple GameZone</h1>
 
-            <!-- Crop Advice Tab -->
-            <div id="crop-tab" class="tab-content">
-                <div class="soil-form">
-                    <h2 data-translate="soil_info">Soil Information</h2>
-                    <div class="soil-grid">
-                        <div class="input-field">
-                            <input type="number" id="soil-ph" placeholder="Soil pH (0-14)" min="0" max="14" step="0.1">
-                        </div>
-                        <div class="input-field">
-                            <input type="number" id="nitrogen" placeholder="Nitrogen (ppm)">
-                        </div>
-                        <div class="input-field">
-                            <input type="number" id="phosphorus" placeholder="Phosphorus (ppm)">
-                        </div>
-                        <div class="input-field">
-                            <input type="number" id="potassium" placeholder="Potassium (ppm)">
-                        </div>
-                        <div class="input-field">
-                            <input type="number" id="moisture" placeholder="Moisture (%)" min="0" max="100">
-                        </div>
-                        <div class="input-field">
-                            <select id="region">
-                                <option value="" data-translate="select_region">Select Region</option>
-                                <option value="tropical">Tropical</option>
-                                <option value="temperate">Temperate</option>
-                                <option value="arid">Arid</option>
-                                <option value="mediterranean">Mediterranean</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button id="get-recommendations" class="primary-btn" data-translate="get_recommendations">Get Crop Recommendations</button>
-                </div>
-            </div>
-
-            <!-- Diagnose Tab -->
-            <div id="diagnose-tab" class="tab-content">
-                <div class="diagnose-container">
-                    <h2 data-translate="plant_health">Plant Health Diagnosis</h2>
-                    <label id="upload-area" class="upload-area">
-                        <i data-lucide="upload" class="upload-icon"></i>
-                        <p class="upload-text" id="upload-text" data-translate="upload_plant">Upload plant image for diagnosis</p>
-                        <div id="image-preview" class="image-preview hidden">
-                            <img id="preview-image" src="" alt="Preview">
-                            <button id="remove-image" class="remove-btn">×</button>
-                        </div>
-                    </label>
-                    <input type="file" id="plant-image" accept="image/*" class="hidden">
-                    <button id="analyze-plant" class="primary-btn" disabled data-translate="analyze_plant">Analyze Plant Health</button>
-                </div>
-            </div>
-
-            <!-- Chat Tab -->
-            <div id="chat-tab" class="tab-content active">
-                <div class="chat-container">
-                    <div class="message-container" id="message-container">
-                        <div class="empty-state" id="empty-state">
-                            <p data-translate="ask_me">Ask me about crops, soil, plant diseases, or farming techniques</p>
-                            <div class="quick-questions">
-                                <button class="quick-btn" data-question-en="Best crops for my soil?" data-question-hi="मेरी मिट्टी के लिए सबसे अच्छी फसलें कौन सी हैं?" data-question-te="నా నేలకు ఉత్తమమైన పంటలు ఏమిటి?">
-                                    <i data-lucide="crop"></i>
-                                    <span data-translate="best_crops">Best crops</span>
-                                </button>
-                                <button class="quick-btn" data-question-en="Identify plant disease" data-question-hi="पौधे की बीमारी की पहचान करें" data-question-te="మొక్కల వ్యాధిని గుర్తించండి">
-                                    <i data-lucide="leaf"></i>
-                                    <span data-translate="plant_disease">Plant disease</span>
-                                </button>
-                                <button class="quick-btn" data-question-en="Weather impact on crops?" data-question-hi="फसलों पर मौसम का प्रभाव?" data-question-te="పంటలపై వాతావరణ ప్రభావం?">
-                                    <i data-lucide="sun"></i>
-                                    <span data-translate="weather_impact">Weather impact</span>
-                                </button>
-                                <button class="quick-btn" data-question-en="Irrigation advice" data-question-hi="सिंचाई सलाह" data-question-te="నీటిపారుదల సలహా">
-                                    <i data-lucide="droplet"></i>
-                                    <span data-translate="irrigation">Irrigation</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-container">
-                    <div class="text-input">
-                        <input type="text" id="user-input" placeholder="Ask about crops, soil, or plant health..." data-translate-placeholder="ask_placeholder">
-                        <button class="mic-btn" id="mic-btn">
-                            <i data-lucide="mic"></i>
-                        </button>
-                    </div>
-                    <label class="upload-btn" id="upload-btn">
-                        <i data-lucide="upload"></i>
-                        <input type="file" id="chat-image" accept="image/*" class="hidden">
-                    </label>
-                    <button id="send-btn" class="send-btn">
-                        <i data-lucide="send"></i>
-                        <span class="hidden md:inline" data-translate="send">Send</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+  <div class="games">
+    <div class="game-card">
+      <h3>2048</h3>
+      <button onclick="playGame('2048')">Play Now</button>
     </div>
+    <div class="game-card">
+      <h3>Snake</h3>
+      <button onclick="playGame('snake')">Play Now</button>
+    </div>
+    <div class="game-card">
+      <h3>Tetris</h3>
+      <button onclick="playGame('tetris')">Play Now</button>
+    </div>
+    <div class="game-card">
+      <h3>Pong</h3>
+      <button onclick="playGame('pong')">Play Now</button>
+    </div>
+  </div>
 
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+  <iframe id="gameFrame"></iframe>
+  <button id="backButton" onclick="goBack()">Back to Games</button>
 
-        // Translation dictionary
-        const translations = {
-            en: {
-                soil_info: "Soil Information",
-                select_region: "Select Region",
-                get_recommendations: "Get Crop Recommendations",
-                plant_health: "Plant Health Diagnosis",
-                upload_plant: "Upload plant image for diagnosis",
-                analyze_plant: "Analyze Plant Health",
-                ask_me: "Ask me about crops, soil, plant diseases, or farming techniques",
-                best_crops: "Best crops",
-                plant_disease: "Plant disease",
-                weather_impact: "Weather impact",
-                irrigation: "Irrigation",
-                ask_placeholder: "Ask about crops, soil, or plant health...",
-                send: "Send",
-                listening: "Listening...",
-                speak: "Speak",
-                stop_speaking: "Stop",
-                crop_advice: "Crop Advice",
-                diagnose: "Diagnose",
-                chat: "Chat"
-            },
-            hi: {
-                soil_info: "मिट्टी की जानकारी",
-                select_region: "क्षेत्र चुनें",
-                get_recommendations: "फसल सिफारिशें प्राप्त करें",
-                plant_health: "पौधे की स्वास्थ्य जांच",
-                upload_plant: "निदान के लिए पौधे की छवि अपलोड करें",
-                analyze_plant: "पौधे का स्वास्थ्य विश्लेषण करें",
-                ask_me: "मुझसे फसलों, मिट्टी, पौधों की बीमारियों या खेती के तरीकों के बारे में पूछें",
-                best_crops: "सर्वोत्तम फसलें",
-                plant_disease: "पौधे की बीमारी",
-                weather_impact: "मौसम का प्रभाव",
-                irrigation: "सिंचाई",
-                ask_placeholder: "फसलों, मिट्टी या पौधों के स्वास्थ्य के बारे में पूछें...",
-                send: "भेजें",
-                listening: "सुन रहा हूँ...",
-                speak: "बोलें",
-                stop_speaking: "रोकें",
-                crop_advice: "फसल सलाह",
-                diagnose: "निदान",
-                chat: "चैट"
-            },
-            te: {
-                soil_info: "నేల సమాచారం",
-                select_region: "ప్రాంతాన్ని ఎంచుకోండి",
-                get_recommendations: "పంట సిఫార్సులను పొందండి",
-                plant_health: "మొక్కల ఆరోగ్య నిర్ధారణ",
-                upload_plant: "నిర్ధారణ కోసం మొక్క చిత్రాన్ని అప్లోడ్ చేయండి",
-                analyze_plant: "మొక్కల ఆరోగ్యాన్ని విశ్లేషించండి",
-                ask_me: "పంటలు, నేల, మొక్కల వ్యాధులు లేదా వ్యవసాయ పద్ధతుల గురించి నన్ను అడగండి",
-                best_crops: "ఉత్తమ పంటలు",
-                plant_disease: "మొక్కల వ్యాధి",
-                weather_impact: "వాతావరణ ప్రభావం",
-                irrigation: "నీటిపారుదల",
-                ask_placeholder: "పంటలు, నేల లేదా మొక్కల ఆరోగ్యం గురించి అడగండి...",
-                send: "పంపండి",
-                listening: "వినడం...",
-                speak: "మాట్లాడండి",
-                stop_speaking: "ఆపు",
-                crop_advice: "పంట సలహా",
-                diagnose: "నిర్ధారణ",
-                chat: "చాట్"
-            }
-        };
-
-        // DOM Elements
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const messageContainer = document.getElementById('message-container');
-        const emptyState = document.getElementById('empty-state');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const uploadBtn = document.getElementById('upload-btn');
-        const chatImageInput = document.getElementById('chat-image');
-        const quickQuestionBtns = document.querySelectorAll('.quick-btn');
-        const getRecommendationsBtn = document.getElementById('get-recommendations');
-        const uploadArea = document.getElementById('upload-area');
-        const plantImageInput = document.getElementById('plant-image');
-        const previewImage = document.getElementById('preview-image');
-        const imagePreview = document.getElementById('image-preview');
-        const uploadText = document.getElementById('upload-text');
-        const removeImageBtn = document.getElementById('remove-image');
-        const analyzePlantBtn = document.getElementById('analyze-plant');
-        const languageBtns = document.querySelectorAll('.language-btn');
-        const micBtn = document.getElementById('mic-btn');
-
-        // State
-        let messages = [];
-        let currentImage = null;
-        let currentTab = 'chat';
-        let currentLanguage = 'en';
-        let recognition = null;
-        let speechSynthesis = window.speechSynthesis;
-
-        // Check if browser supports speech recognition
-        const isSpeechRecognitionSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-
-        // Initialize speech recognition if supported
-        if (isSpeechRecognitionSupported) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                userInput.value = transcript;
-                micBtn.classList.remove('listening');
-                micBtn.innerHTML = '<i data-lucide="mic"></i>';
-                lucide.createIcons();
-            };
-
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error', event.error);
-                micBtn.classList.remove('listening');
-                micBtn.innerHTML = '<i data-lucide="mic"></i>';
-                lucide.createIcons();
-            };
-
-            recognition.onend = () => {
-                if (micBtn.classList.contains('listening')) {
-                    micBtn.classList.remove('listening');
-                    micBtn.innerHTML = '<i data-lucide="mic"></i>';
-                    lucide.createIcons();
-                }
-            };
-        } else {
-            micBtn.style.display = 'none';
+  <script>
+    const iframe = document.getElementById('gameFrame');
+    const backButton = document.getElementById('backButton');
+    const gamesHTML = {
+      "2048": `
+        <html><body><script src="https://play2048.co/script.js"></script><iframe src="https://play2048.co/" width="100%" height="100%" style="border:0;"></iframe></body></html>
+      `,
+      "snake": `
+        <html><body style="margin:0;"><canvas id="game" width="400" height="400"></canvas><script>
+        const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+        let snake=[{x:160,y:160}],dx=20,dy=0,food,score=0;
+        const rand=()=>Math.floor(Math.random()*20)*20;
+        const draw=()=>{ctx.fillStyle='black';ctx.fillRect(0,0,400,400);
+          for(let s of snake){ctx.fillStyle='lime';ctx.fillRect(s.x,s.y,20,20);}
+          ctx.fillStyle='red';ctx.fillRect(food.x,food.y,20,20);}
+        const move=()=>{let head={x:snake[0].x+dx,y:snake[0].y+dy};
+          snake.unshift(head);
+          if(head.x==food.x&&head.y==food.y){food={x:rand(),y:rand()};}else{snake.pop();}
+          if(head.x<0||head.x>=400||head.y<0||head.y>=400||snake.slice(1).some(s=>s.x==head.x&&s.y==head.y))
+            location.reload();}
+        document.addEventListener('keydown',e=>{if(e.key=='ArrowUp'&&dy==0)dx=0,dy=-20;
+          if(e.key=='ArrowDown'&&dy==0)dx=0,dy=20;
+          if(e.key=='ArrowLeft'&&dx==0)dx=-20,dy=0;
+          if(e.key=='ArrowRight'&&dx==0)dx=20,dy=0;});
+        food={x:rand(),y:rand()};
+        setInterval(()=>{move();draw();},100);
+        </script></body></html>
+      `,
+      "tetris": `
+        <html><body><script src="https://cdn.jsdelivr.net/gh/dionyziz/canvas-tetris/tetris.js"></script></body></html>
+      `,
+      "pong": `
+        <html><body><canvas id="pong" width="600" height="400"></canvas><script>
+        const canvas=document.getElementById('pong'),ctx=canvas.getContext('2d');
+        let paddle=[{x:0,y:150,w:10,h:100,dy:0},{x:590,y:150,w:10,h:100,dy:0}],
+            ball={x:300,y:200,r:10,dx:4,dy:4};
+        document.addEventListener('keydown',e=>{if(e.key=='w')paddle[0].dy=-5;if(e.key=='s')paddle[0].dy=5;});
+        document.addEventListener('keyup',e=>{if(e.key=='w'||e.key=='s')paddle[0].dy=0;});
+        function draw(){ctx.fillStyle='black';ctx.fillRect(0,0,600,400);
+          for(let p of paddle){ctx.fillStyle='white';ctx.fillRect(p.x,p.y,p.w,p.h);}
+          ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();}
+        function update(){
+          for(let p of paddle){p.y+=p.dy;p.y=Math.max(0,Math.min(300,p.y));}
+          ball.x+=ball.dx;ball.y+=ball.dy;
+          if(ball.y<0||ball.y>400)ball.dy*=-1;
+          if(ball.x<10&&ball.y>paddle[0].y&&ball.y<paddle[0].y+100)ball.dx*=-1;
+          if(ball.x>580&&ball.y>paddle[1].y&&ball.y<paddle[1].y+100)ball.dx*=-1;
+          if(ball.x<0||ball.x>600){ball.x=300;ball.y=200;}
+          paddle[1].y+=ball.y>paddle[1].y+50?3:-3;
         }
+        setInterval(()=>{update();draw();},30);
+        </script></body></html>
+      `
+    };
 
-        // Set language
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            
-            // Update active language button
-            languageBtns.forEach(btn => {
-                if (btn.getAttribute('data-lang') === lang) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+    function playGame(gameName) {
+      iframe.srcdoc = gamesHTML[gameName];
+      iframe.style.display = "block";
+      document.querySelector('.games').style.display = 'none';
+      backButton.style.display = 'block';
+    }
 
-            // Update all translatable elements
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                el.textContent = translations[lang][key] || translations['en'][key];
-            });
-
-            // Update placeholder texts
-            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-translate-placeholder');
-                el.placeholder = translations[lang][key] || translations['en'][key];
-            });
-
-            // Update tab buttons
-            tabBtns.forEach(btn => {
-                const tab = btn.getAttribute('data-tab');
-                btn.textContent = translations[lang][tab] || translations['en'][tab];
-            });
-
-            // Update quick question buttons
-            quickQuestionBtns.forEach(btn => {
-                const questionKey = `question-${btn.getAttribute('data-question-en').toLowerCase().replace(/\s+/g, '_').replace(/\?/g, '')}`;
-                btn.setAttribute('data-question', translations[lang][questionKey] || translations['en'][questionKey]);
-            });
-        }
-
-        // Tab switching
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tabId = btn.getAttribute('data-tab');
-                switchTab(tabId);
-            });
-        });
-
-        function switchTab(tabId) {
-            // Update active tab button
-            tabBtns.forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabId) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Update active tab content
-            tabContents.forEach(content => {
-                if (content.id === `${tabId}-tab`) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            });
-
-            currentTab = tabId;
-        }
-
-        // Language switching
-        languageBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const lang = btn.getAttribute('data-lang');
-                setLanguage(lang);
-                
-                // Update speech recognition language if supported
-                if (recognition) {
-                    switch(lang) {
-                        case 'hi':
-                            recognition.lang = 'hi-IN';
-                            break;
-                        case 'te':
-                            recognition.lang = 'te-IN';
-                            break;
-                        default:
-                            recognition.lang = 'en-US';
-                    }
-                }
-            });
-        });
-
-        // Quick question buttons
-        quickQuestionBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                let question;
-                switch(currentLanguage) {
-                    case 'hi':
-                        question = btn.getAttribute('data-question-hi');
-                        break;
-                    case 'te':
-                        question = btn.getAttribute('data-question-te');
-                        break;
-                    default:
-                        question = btn.getAttribute('data-question-en');
-                }
-                userInput.value = question;
-            });
-        });
-
-        // Image upload for chat
-        uploadBtn.addEventListener('click', () => {
-            chatImageInput.click();
-        });
-
-        chatImageInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                currentImage = e.target.files[0];
-                uploadBtn.classList.add('has-image');
-                uploadBtn.innerHTML = '<i data-lucide="image"></i>';
-                lucide.createIcons();
-            }
-        });
-
-        // Image upload for diagnosis
-        uploadArea.addEventListener('click', () => {
-            plantImageInput.click();
-        });
-
-        plantImageInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    previewImage.src = event.target.result;
-                    imagePreview.classList.remove('hidden');
-                    uploadText.textContent = translations[currentLanguage]['image_ready'] || 'Image ready for upload';
-                    analyzePlantBtn.disabled = false;
-                };
-                
-                reader.readAsDataURL(file);
-            }
-        });
-
-        removeImageBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            previewImage.src = '';
-            imagePreview.classList.add('hidden');
-            uploadText.textContent = translations[currentLanguage]['upload_plant'] || 'Upload plant image for diagnosis';
-            plantImageInput.value = '';
-            analyzePlantBtn.disabled = true;
-        });
-
-        // Get crop recommendations
-        getRecommendationsBtn.addEventListener('click', () => {
-            const ph = document.getElementById('soil-ph').value;
-            const nitrogen = document.getElementById('nitrogen').value;
-            const phosphorus = document.getElementById('phosphorus').value;
-            const potassium = document.getElementById('potassium').value;
-            const moisture = document.getElementById('moisture').value;
-            const region = document.getElementById('region').value;
-
-            const regionText = document.querySelector(`#region option[value="${region}"]`).textContent;
-            
-            let message;
-            switch(currentLanguage) {
-                case 'hi':
-                    message = `फसल सिफारिशें: pH ${ph}, नाइट्रोजन ${nitrogen}, फॉस्फोरस ${phosphorus}, पोटैशियम ${potassium}, नमी ${moisture}%, ${regionText} क्षेत्र`;
-                    break;
-                case 'te':
-                    message = `పంట సిఫార్సులు: pH ${ph}, నత్రజని ${nitrogen}, భాస్వరం ${phosphorus}, పొటాషియం ${potassium}, తేమ ${moisture}%, ${regionText} ప్రాంతం`;
-                    break;
-                default:
-                    message = `Recommend crops for: pH ${ph}, N ${nitrogen}, P ${phosphorus}, K ${potassium}, Moisture ${moisture}%, ${regionText} region`;
-            }
-            
-            switchTab('chat');
-            userInput.value = message;
-            userInput.focus();
-        });
-
-        // Analyze plant health
-        analyzePlantBtn.addEventListener('click', () => {
-            let message;
-            switch(currentLanguage) {
-                case 'hi':
-                    message = "कृपया अपलोड की गई छवि से मेरे पौधे का निदान करें";
-                    break;
-                case 'te':
-                    message = "దయచేసి అప్లోడ్ చేసిన చిత్రం నుండి నా మొక్కను నిర్ధారించండి";
-                    break;
-                default:
-                    message = "Please diagnose my plant from the uploaded image";
-            }
-            
-            switchTab('chat');
-            userInput.value = message;
-            userInput.focus();
-        });
-
-        // Voice input
-        micBtn.addEventListener('click', () => {
-            if (!isSpeechRecognitionSupported) return;
-
-            if (micBtn.classList.contains('listening')) {
-                recognition.stop();
-                micBtn.classList.remove('listening');
-                micBtn.innerHTML = '<i data-lucide="mic"></i>';
-            } else {
-                recognition.start();
-                micBtn.classList.add('listening');
-                micBtn.innerHTML = '<i data-lucide="mic"></i> ' + (translations[currentLanguage]['listening'] || 'Listening...');
-            }
-            lucide.createIcons();
-        });
-
-        // Text-to-speech
-        function speakText(text) {
-            if (speechSynthesis) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Set voice based on language
-                const voices = speechSynthesis.getVoices();
-                let voice = voices.find(v => v.lang.includes(currentLanguage));
-                if (!voice) voice = voices.find(v => v.lang.includes('en'));
-                
-                if (voice) {
-                    utterance.voice = voice;
-                    utterance.lang = voice.lang;
-                }
-                
-                speechSynthesis.speak(utterance);
-            }
-        }
-
-        // Send message
-        function sendMessage() {
-            const text = userInput.value.trim();
-            
-            if (!text && !currentImage) return;
-
-            // Create user message
-            const userMessage = {
-                role: 'user',
-                content: text,
-                image: currentImage,
-                timestamp: new Date()
-            };
-
-            addMessage(userMessage);
-            messages.push(userMessage);
-
-            // Clear inputs
-            userInput.value = '';
-            currentImage = null;
-            chatImageInput.value = '';
-            uploadBtn.classList.remove('has-image');
-            uploadBtn.innerHTML = '<i data-lucide="upload"></i>';
-            lucide.createIcons();
-
-            // Show loading indicator
-            const loadingMessage = {
-                role: 'assistant',
-                content: '',
-                isLoading: true,
-                timestamp: new Date()
-            };
-            addMessage(loadingMessage);
-
-            // Simulate API response (replace with actual API call)
-            setTimeout(() => {
-                // Remove loading indicator
-                messageContainer.removeChild(messageContainer.lastChild);
-                
-                // Create assistant response
-                let responseText = '';
-                
-                if (userMessage.image) {
-                    switch(currentLanguage) {
-                        case 'hi':
-                            responseText = "छवि के आधार पर, मुझे प्रारंभिक झुलसा रोग के लक्षण दिखाई दे रहे हैं। सिफारिशें:\n" +
-                                          "1. प्रभावित पत्तियों को हटा दें\n" +
-                                          "2. कॉपर आधारित कवकनाशी लगाएं\n" +
-                                          "3. हवा के संचार में सुधार करें\n" +
-                                          "4. पौधों के आधार पर पानी दें";
-                            break;
-                        case 'te':
-                            responseText = "చిత్రం ఆధారంగా, నేను ప్రారంభ బ్లైట్ లక్షణాలను గుర్తించాను. సిఫార్సులు:\n" +
-                                          "1. ప్రభావిత ఆకులను తీసివేయండి\n" +
-                                          "2. రాగి-ఆధారిత ఫంగిసైడ్ వర్తించండి\n" +
-                                          "3. గాలి ప్రసరణను మెరుగుపరచండి\n" +
-                                          "4. మొక్కల బేస్ వద్ద నీరు పెట్టండి";
-                            break;
-                        default:
-                            responseText = "Based on the image, I detect signs of early blight. Recommendations:\n" +
-                                          "1. Remove affected leaves\n" +
-                                          "2. Apply copper-based fungicide\n" +
-                                          "3. Improve air circulation\n" +
-                                          "4. Water at the base of plants";
-                    }
-                } else if (text.toLowerCase().includes('crop') || text.toLowerCase().includes('फसल') || text.toLowerCase().includes('పంట')) {
-                    switch(currentLanguage) {
-                        case 'hi':
-                            responseText = "आपके मिट्टी के आंकड़ों के आधार पर, मैं सुझाव देता हूं:\n" +
-                                          "1. गेहूं (उच्च उपयुक्तता)\n" +
-                                          "2. जौ (मध्यम उपयुक्तता)\n" +
-                                          "3. आलू (मध्यम उपयुक्तता)";
-                            break;
-                        case 'te':
-                            responseText = "మీ నేల డేటా ఆధారంగా, నేను సిఫార్సు చేస్తున్నాను:\n" +
-                                          "1. గోధుమ (అధిక ఉపయుక్తత)\n" +
-                                          "2. బార్లీ (మధ్యస్థ ఉపయుక్తత)\n" +
-                                          "3. బంగాళాదుంపలు (మధ్యస్థ ఉపయుక్తత)";
-                            break;
-                        default:
-                            responseText = "Based on your soil data, I recommend:\n" +
-                                          "1. Wheat (High suitability)\n" +
-                                          "2. Barley (Medium suitability)\n" +
-                                          "3. Potatoes (Medium suitability)";
-                    }
-                } else {
-                    switch(currentLanguage) {
-                        case 'hi':
-                            responseText = "मैं फसल सिफारिशों, पौधों की बीमारियों के निदान और सामान्य खेती सलाह में मदद कर सकता हूँ। " +
-                                          "कृपया अपने प्रश्न को और विशिष्ट बनाएं या निदान के लिए अपने पौधे की एक छवि अपलोड करें।";
-                            break;
-                        case 'te':
-                            responseText = "నేను పంట సిఫార్సులు, మొక్కల వ్యాధుల నిర్ధారణ మరియు సాధారణ వ్యవసాయ సలహాలతో సహాయపడగలను. " +
-                                          "దయచేసి మీ ప్రశ్నను మరింత నిర్దిష్టంగా చేయండి లేదా నిర్ధారణ కోసం మీ మొక్క యొక్క చిత్రాన్ని అప్లోడ్ చేయండి.";
-                            break;
-                        default:
-                            responseText = "I can help with crop recommendations, plant disease diagnosis, and general farming advice. " +
-                                          "Please be more specific about your question or upload an image of your plant for diagnosis.";
-                    }
-                }
-
-                const assistantMessage = {
-                    role: 'assistant',
-                    content: responseText,
-                    timestamp: new Date()
-                };
-
-                addMessage(assistantMessage);
-                messages.push(assistantMessage);
-
-                // Speak the response
-                speakText(responseText);
-            }, 1500);
-        }
-
-        // Add message to chat
-        function addMessage(message) {
-            if (emptyState) {
-                emptyState.style.display = 'none';
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.role}-message`;
-
-            if (message.isLoading) {
-                messageDiv.innerHTML = `
-                    <div class="loading-dots">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
-                `;
-            } else {
-                let contentHTML = `<div>${message.content.replace(/\n/g, '<br>')}</div>`;
-
-                if (message.image) {
-                    const imageUrl = URL.createObjectURL(message.image);
-                    contentHTML += `
-                        <div class="message-image">
-                            <img src="${imageUrl}" alt="Uploaded plant">
-                            <span class="image-badge">Plant Photo</span>
-                        </div>
-                    `;
-                }
-
-                contentHTML += `
-                    <div class="message-time">
-                        ${message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                `;
-
-                // Add speak button for assistant messages
-                if (message.role === 'assistant' && speechSynthesis) {
-                    contentHTML += `
-                        <div class="message-actions">
-                            <button class="message-action-btn" onclick="speakText('${message.content.replace(/'/g, "\\'")}')">
-                                <i data-lucide="volume-2"></i>
-                                ${translations[currentLanguage]['speak'] || 'Speak'}
-                            </button>
-                        </div>
-                    `;
-                }
-
-                messageDiv.innerHTML = contentHTML;
-            }
-
-            messageContainer.appendChild(messageDiv);
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-            lucide.createIcons();
-        }
-
-        // Event listeners
-        sendBtn.addEventListener('click', sendMessage);
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        // Initialize with English language
-        setLanguage('en');
-
-        // Initialize with empty chat
-        if (messages.length === 0) {
-            emptyState.style.display = 'flex';
-        }
-
-        // Make speakText available globally
-        window.speakText = speakText;
-    </script>
+    function goBack() {
+      iframe.style.display = "none";
+      document.querySelector('.games').style.display = 'flex';
+      backButton.style.display = 'none';
+      iframe.srcdoc = ''; // clear previous game
+    }
+  </script>
 </body>
 </html>
